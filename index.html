@@ -102,13 +102,14 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
         import { getDatabase, ref, set, onValue, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 
+        // CONFIGURAÇÃO ATUALIZADA
         const firebaseConfig = {
-            apiKey: "AIzaSyBzMMXyLG1GfN4OwjeJKboRN7XXCUkOszo",
+            apiKey: "AIzaSyBzMMXyLG1GfN4OwjeJKboRN7V0-yXfOms",
             authDomain: "chickentycoon.firebaseapp.com",
             projectId: "chickentycoon",
             storageBucket: "chickentycoon.firebasestorage.app",
             messagingSenderId: "531618471959",
-            appId: "1:531618471959:web:3fd8833376511a3573bc52",
+            appId: "1:531618471959:web:5484bbd6dcca21e102462e",
             databaseURL: "https://chickentycoon-default-rtdb.firebaseio.com"
         };
 
@@ -128,7 +129,7 @@
 
         const moneyDisplay = document.getElementById('money-text');
 
-        // FIREBASE SYNC
+        // SYNC FIREBASE
         window.syncFirebase = function() {
             if(window.playerName !== "Player" && window.playerName.trim() !== "") {
                 set(ref(db, 'ranking/' + window.playerName), {
@@ -157,7 +158,7 @@
             window.syncFirebase();
         });
 
-        // LÓGICA MANTIDA
+        // LÓGICA DE JOGO
         window.salvar = function() {
             localStorage.setItem('henrique_factory_save', JSON.stringify({ money: window.money, workers: window.workers }));
             window.syncFirebase();
