@@ -100,7 +100,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-        import { getDatabase, ref, set, onValue, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+        import { getDatabase, ref, set, onValue, query, orderByChild, limitToLast, get } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 
         // CONFIGURAÇÃO ATUALIZADA
         const firebaseConfig = {
@@ -129,39 +129,54 @@
 
         const moneyDisplay = document.getElementById('money-text');
 
-        // SYNC FIREBASE
-        window.syncFirebase = function() {
-            if(window.playerName !== "Player" && window.playerName.trim() !== "") {
-                set(ref(db, 'ranking/' + window.playerName), {
-                    nome: window.playerName,
-                    pontos: window.money
-                });
+        // SYNC FIREBASE (AGORA COM CONTROLE DE TEMPO PARA ECONOMIZAR)
+        let lastSyncTime = 0;
+        const syncInterval = 60000; // 1 Minuto em milissegundos
+
+        window.syncFirebase = function(force = false) {
+            const now = Date.now();
+            if(force || (now - lastSyncTime >= syncInterval)) {
+                if(window.playerName !== "Player" && window.playerName.trim() !== "") {
+                    set(ref(db, 'ranking/' + window.playerName), {
+                        nome: window.playerName,
+                        pontos: window.money
+                    });
+                    lastSyncTime = now;
+                    console.log("Ranking sincronizado para economizar créditos.");
+                }
             }
         };
 
-        const rankRef = query(ref(db, 'ranking'), orderByChild('pontos'), limitToLast(5));
-        onValue(rankRef, (snapshot) => {
-            const data = snapshot.val();
-            const rankItems = document.getElementById('rank-items');
-            rankItems.innerHTML = "";
-            let lista = [];
-            for (let id in data) { lista.push(data[id]); }
-            lista.sort((a, b) => b.pontos - a.pontos);
-            lista.forEach((p, i) => {
-                rankItems.innerHTML += `<div class="rank-item"><span class="rank-name">${i+1}. ${p.nome}</span><span class="rank-val">$${p.pontos}</span></div>`;
+        // ATUALIZA A TABELA VISUAL A CADA 1 MINUTO
+        function updateLeaderboardUI() {
+            const rankRef = query(ref(db, 'ranking'), orderByChild('pontos'), limitToLast(5));
+            get(rankRef).then((snapshot) => {
+                const data = snapshot.val();
+                const rankItems = document.getElementById('rank-items');
+                rankItems.innerHTML = "";
+                let lista = [];
+                for (let id in data) { lista.push(data[id]); }
+                lista.sort((a, b) => b.pontos - a.pontos);
+                lista.forEach((p, i) => {
+                    rankItems.innerHTML += `<div class="rank-item"><span class="rank-name">${i+1}. ${p.nome}</span><span class="rank-val">$${p.pontos}</span></div>`;
+                });
             });
-        });
+        }
+
+        // Carrega o ranking ao iniciar e depois a cada 1 minuto
+        updateLeaderboardUI();
+        setInterval(updateLeaderboardUI, 60000);
 
         document.getElementById('name-input').addEventListener('change', (e) => {
             window.playerName = e.target.value;
             localStorage.setItem('factory_name', window.playerName);
-            window.syncFirebase();
+            window.syncFirebase(true); // Força a sincronização quando troca o nome
         });
 
         // LÓGICA DE JOGO
         window.salvar = function() {
             localStorage.setItem('henrique_factory_save', JSON.stringify({ money: window.money, workers: window.workers }));
-            window.syncFirebase();
+            window.syncFirebase(); // Tenta sincronizar, mas obedece o limite de 1 min
         };
 
         window.carregar = function() {
@@ -227,6 +242,7 @@
                         window.workers[id].progress = 0;
                         window.money += window.workers[id].value;
                         moneyDisplay.innerText = window.money;
+                        // Chama o salvar, mas o Firebase só será atualizado a cada 1 minuto
                         if(window.money % 50 === 0) window.salvar();
                     }
                     const bar = document.getElementById(`fill-${id}`);
@@ -240,4 +256,4 @@
         loop();
     </script>
 </body>
-</html>
+    </html>
