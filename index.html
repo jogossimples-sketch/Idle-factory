@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Factory Tycoon - Henrique</title>
     <style>
-        /* DESIGN MELHORADO */
+        /* DESIGN MANTIDO E MELHORADO */
         body { 
             background-color: #333; 
             color: white; 
@@ -24,20 +24,63 @@
             text-align: center; 
             border-bottom: 4px solid #edb900;
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
         }
 
-        #money-display { 
+        #money-text { 
             color: #ffd700; 
             font-size: 28px; 
             font-weight: bold; 
             text-shadow: 2px 2px #000;
         }
 
+        /* CONTAINER PARA ALINHAR RANKING À ESQUERDA */
+        #game-container {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            gap: 20px;
+            max-width: 95vw;
+        }
+
+        /* ESTILO DO RANKING */
+        #leaderboard {
+            background: #222;
+            border: 3px solid #444;
+            border-radius: 10px;
+            padding: 15px;
+            width: 150px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        #leaderboard h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: #edb900;
+            text-align: center;
+            border-bottom: 1px solid #444;
+            padding-bottom: 5px;
+        }
+
+        .rank-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-bottom: 8px;
+            padding: 4px;
+            background: #333;
+            border-radius: 4px;
+        }
+
+        .rank-name { color: #ccc; }
+        .rank-val { color: #ffd700; font-weight: bold; }
+        .rank-me { border: 1px solid #edb900; background: #444; }
+
+        /* GRADE DA FÁBRICA (MANTIDA) */
         #factory-grid { 
             display: grid; 
             grid-template-columns: repeat(3, 115px); 
             gap: 15px; 
-            margin-top: 40px; 
             background: #222;
             padding: 20px;
             border-radius: 15px;
@@ -58,11 +101,7 @@
             box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
         }
 
-        .locked {
-            background: #444;
-            opacity: 0.7;
-            cursor: pointer;
-        }
+        .locked { background: #444; opacity: 0.7; cursor: pointer; }
 
         .progress-bar {
             width: 85%;
@@ -100,13 +139,19 @@
         .label { font-size: 9px; color: #aaa; margin-bottom: 2px; }
 
         #reset {
-            margin-top: 20px;
+            margin: 20px 0;
             background: #f44336;
             color: white;
             border: none;
-            padding: 5px 10px;
+            padding: 10px 20px;
             border-radius: 5px;
             cursor: pointer;
+        }
+
+        /* AJUSTE PARA CELULAR */
+        @media (max-width: 600px) {
+            #game-container { flex-direction: column; align-items: center; }
+            #leaderboard { width: 90%; }
         }
     </style>
 </head>
@@ -116,25 +161,36 @@
         💰 $<span id="money-text">0</span>
     </div>
 
-    <div id="factory-grid">
-        <div class="worker-slot" id="slot-1">
-            <div class="item-icon">💀</div>
-            <div class="label">TRABALHADOR 1</div>
-            <div class="progress-bar"><div id="fill-1" class="progress-fill"></div></div>
-            <button class="up-btn" onclick="upgrade(1)">UP: $<span id="cost-1">20</span></button>
-        </div>
-        
-        <div class="worker-slot locked" id="slot-2" onclick="comprar(2, 50)">
-            <div id="content-2" style="text-align:center">
-                <span>🔒</span>
-                <div class="price-tag">$50</div>
+    <div id="game-container">
+        <div id="leaderboard">
+            <h3>🏆 RANKING</h3>
+            <div id="rank-items">
+                <div class="rank-item"><span class="rank-name">1. Bot_Z</span><span class="rank-val">$5k</span></div>
+                <div class="rank-item"><span class="rank-name">2. Bot_Y</span><span class="rank-val">$1k</span></div>
+                <div class="rank-item rank-me"><span class="rank-name">Vocé</span><span class="rank-val" id="rank-money">$0</span></div>
             </div>
         </div>
 
-        <div class="worker-slot locked" id="slot-3" onclick="comprar(3, 150)">
-            <div id="content-3" style="text-align:center">
-                <span>🔒</span>
-                <div class="price-tag">$150</div>
+        <div id="factory-grid">
+            <div class="worker-slot" id="slot-1">
+                <div class="item-icon">💀</div>
+                <div class="label">TRABALHADOR 1</div>
+                <div class="progress-bar"><div id="fill-1" class="progress-fill"></div></div>
+                <button class="up-btn" onclick="upgrade(1)">UP: $<span id="cost-1">20</span></button>
+            </div>
+            
+            <div class="worker-slot locked" id="slot-2" onclick="comprar(2, 50)">
+                <div id="content-2" style="text-align:center">
+                    <span>🔒</span>
+                    <div class="price-tag">$50</div>
+                </div>
+            </div>
+
+            <div class="worker-slot locked" id="slot-3" onclick="comprar(3, 150)">
+                <div id="content-3" style="text-align:center">
+                    <span>🔒</span>
+                    <div class="price-tag">$150</div>
+                </div>
             </div>
         </div>
     </div>
@@ -142,7 +198,7 @@
     <button id="reset" onclick="resetar()">Resetar Progresso</button>
 
     <script>
-        // LÓGICA DO JOGO
+        // LÓGICA DO JOGO MANTIDA
         let money = 0;
         let workers = {
             1: { active: true, progress: 0, speed: 2, value: 10, upCost: 20 },
@@ -151,8 +207,8 @@
         };
 
         const moneyDisplay = document.getElementById('money-text');
+        const rankMoney = document.getElementById('rank-money');
 
-        // SALVAR E CARREGAR
         function salvar() {
             localStorage.setItem('henrique_factory_save', JSON.stringify({ money, workers }));
         }
@@ -166,29 +222,33 @@
                 for (let id in workers) {
                     if (workers[id].active) atualizarInterface(id);
                 }
-                moneyDisplay.innerText = money;
+                updateMoneyUI();
             }
         }
 
-        // COMPRAR NOVO TRABALHADOR
+        function updateMoneyUI() {
+            moneyDisplay.innerText = money;
+            rankMoney.innerText = "$" + money;
+        }
+
         function comprar(id, preco) {
             if (money >= preco && !workers[id].active) {
                 money -= preco;
                 workers[id].active = true;
                 atualizarInterface(id);
+                updateMoneyUI();
                 salvar();
             }
         }
 
-        // UPGRADE DE VELOCIDADE
         function upgrade(id) {
             let w = workers[id];
             if (money >= w.upCost) {
                 money -= w.upCost;
-                w.speed += 0.5; // Aumenta a velocidade (sua lógica original de speed)
+                w.speed += 0.5;
                 w.upCost = Math.floor(w.upCost * 1.7);
                 document.getElementById(`cost-${id}`).innerText = w.upCost;
-                moneyDisplay.innerText = money;
+                updateMoneyUI();
                 salvar();
             }
         }
@@ -213,7 +273,6 @@
             }
         }
 
-        // LOOP PRINCIPAL (Mantendo sua lógica de requestAnimationFrame)
         function update() {
             for (let id in workers) {
                 if (workers[id].active) {
@@ -222,8 +281,7 @@
                     if (workers[id].progress >= 100) {
                         workers[id].progress = 0;
                         money += workers[id].value;
-                        moneyDisplay.innerText = money;
-                        // Salva periodicamente
+                        updateMoneyUI();
                         if(money % 10 === 0) salvar();
                     }
 
