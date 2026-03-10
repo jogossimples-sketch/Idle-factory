@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Meu Clone de Factory Tycoon</title>
+    <style>
+        body { background-color: #333; color: white; font-family: 'Arial', sans-serif; display: flex; flex-direction: column; align-items: center; }
+        
+        /* Topo com Dinheiro */
+        #header { background: #444; width: 100%; padding: 10px; text-align: center; border-bottom: 4px solid #edb900; }
+        #money { color: #ffd700; font-size: 24px; font-weight: bold; }
+
+        /* Grade da Fábrica */
+        #factory-grid { 
+            display: grid; 
+            grid-template-columns: repeat(3, 110px); 
+            gap: 15px; 
+            margin-top: 50px; 
+            background: #555;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        /* Estilo de cada "Posto de Trabalho" */
+        .worker-slot {
+            width: 100px;
+            height: 120px;
+            background: #777;
+            border: 2px solid #999;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            padding-bottom: 5px;
+        }
+
+        /* Barra de Progresso Circular (Simulação) */
+        .progress-bar {
+            width: 80%;
+            height: 10px;
+            background: #222;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: #4caf50;
+            transition: width 0.1s linear;
+        }
+
+        .item-icon { font-size: 30px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+    <div id="header">
+        💰 Dinheiro: $<span id="money-display">0</span>
+    </div>
+
+    <div id="factory-grid">
+        <div class="worker-slot">
+            <div class="item-icon">💀</div>
+            <div style="font-size: 10px;">TRABALHADOR 1</div>
+            <div class="progress-bar">
+                <div id="fill-1" class="progress-fill"></div>
+            </div>
+        </div>
+        
+        <div class="worker-slot" style="opacity: 0.5;">🔒</div>
+        <div class="worker-slot" style="opacity: 0.5;">🔒</div>
+    </div>
+
+    <script>
+        // Lógica simples de JavaScript
+        let money = 0;
+        let progress = 0;
+        const speed = 2; // quanto maior, mais rápido
+        
+        function update() {
+            progress += speed;
+            
+            if (progress >= 100) {
+                progress = 0;
+                money += 10; // Ganha 10 moedas cada vez que a barra enche
+                document.getElementById('money-display').innerText = money;
+            }
+            
+            document.getElementById('fill-1').style.width = progress + "%";
+            requestAnimationFrame(update);
+        }
+
+        update(); // Inicia o loop do jogo
+    </script>
+</body>
+  </html>
