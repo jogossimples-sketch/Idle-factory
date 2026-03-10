@@ -1,33 +1,23 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meu Clone de Factory Tycoon</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-
-    <div id="header">
-        <div id="money-container">
-            <span style="font-size: 24px;">💰</span>
-            <span id="money-display">0</span>
+<div id="factory-grid">
+    <div class="worker-slot" id="slot-1">
+        <div class="item-icon">💀</div>
+        <div class="worker-label">TRABALHADOR 1</div>
+        <div class="progress-bar">
+            <div id="fill-1" class="progress-fill"></div>
+        </div>
+    </div>
+    
+    <div class="worker-slot locked" id="slot-2" onclick="comprarTrabalhador(2, 50)">
+        <div id="content-2">
+            <span>🔒</span>
+            <div class="price-tag">$50</div>
         </div>
     </div>
 
-    <div id="factory-grid">
-        <div class="worker-slot">
-            <div class="item-icon">💀</div>
-            <div class="worker-label">TRABALHADOR 1</div>
-            <div class="progress-bar">
-                <div id="fill-1" class="progress-fill"></div>
-            </div>
+    <div class="worker-slot locked" id="slot-3" onclick="comprarTrabalhador(3, 150)">
+        <div id="content-3">
+            <span>🔒</span>
+            <div class="price-tag">$150</div>
         </div>
-        
-        <div class="worker-slot locked">🔒</div>
-        <div class="worker-slot locked">🔒</div>
     </div>
-
-    <script src="script.js"></script>
-</body>
-</html>
+        </div>
